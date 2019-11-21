@@ -1,0 +1,43 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: amm-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: amm-route
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - amm-gateway
+  http:
+  - name: "hello-route"
+    match:
+    - uri:
+        prefix: /hello
+    route:
+    - destination:
+        host: webhello
+        port:
+          number: 8080
+  - name: "goodby-route"
+    match:
+    - uri:
+        prefix: /goodby
+    route:
+    - destination:
+        host: webgoodby
+        port:
+          number: 8080
